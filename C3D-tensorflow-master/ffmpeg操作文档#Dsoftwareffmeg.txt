@@ -1,0 +1,6 @@
+cygwin64
+1.首先切换Bin目录下
+2.把ffmpeg.exe到当前Bin目录下
+3../xxx.sh test 5
+sample:
+./convert_video_to_images.sh test 5
