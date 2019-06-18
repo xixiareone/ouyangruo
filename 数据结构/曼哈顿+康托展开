@@ -1,0 +1,138 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<queue>
+using namespace std;
+const int maxn=1000000;
+int vis[maxn];
+int dx[]={-1,1,0,0};
+int dy[]={0,0,-1,1};
+const int f[]={1,1,2,6,24,120,720,5040,40320};
+int map[3][3];
+int mapcopy[3][3]={1,2,3,4,5,6,7,8,0};
+char d[5]="udlr";
+struct point
+{
+    int zero;
+    int s[10];
+    int pan;
+    string path;
+    int manlength;
+}st;
+string path1;
+queue<point>q;
+int panzhong(int dis[])
+{
+    int code=0;
+    for(int i=0;i<9;++i)
+    {
+        int cnt=0;
+        for(int j=i+1;j<9;++j)
+        {
+            if(dis[j]<dis[i])
+                ++cnt;
+        }
+        code+=f[8-i]*cnt;
+    }
+    return code+1;
+}
+int manhadun(int dis[])
+{
+    int num=0;
+    int sum=0;
+    for(int i=0;i<3;++i)
+        for(int j=0;j<3;++j)
+         map[i][j]=dis[num++];
+    for(int i=0;i<3;++i)
+    {
+        for(int j=0;j<3;++j)
+        {
+            if(map[i][j]!=0)
+            {
+                for(int k=0;k<3;++k)
+                {
+                    for(int m=0;m<3;++m)
+                    {
+                        if(map[i][j]==mapcopy[k][m])
+                        {
+                            sum=sum+abs(i-k)+abs(j-m);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return sum;
+} 
+int bfs()
+{
+    while(!q.empty())
+        q.pop();
+    for(int i=0;i<9;++i)
+    {
+        if(st.s[i]==0)
+            st.zero=i;
+    }
+    st.pan=panzhong(st.s);
+    st.manlength=manhadun(st.s);
+    //st.path="";
+    q.push(st);
+    while(!q.empty())
+    {
+        point now=q.front();
+        q.pop();
+        if(now.manlength==0)
+        {
+            path1=now.path;
+            return 1;
+        }
+        int a=now.zero/3;
+        int b=now.zero%3;
+        for(int i=0;i<4;++i)
+        {
+            point next=now;
+            int t1=a+dx[i];
+            int t2=b+dy[i];
+            if(t1<0||t2<0||t1>=3||t2>=3) continue;
+            next.zero=t1*3+t2;
+            swap(next.s[now.zero],next.s[next.zero]);
+            next.pan=panzhong(next.s);
+            next.manlength=manhadun(next.s);
+            if(!vis[next.pan]){
+                vis[next.pan]=1;
+                next.path=next.path+d[i];
+                if(next.manlength==0){
+                    path1=next.path;
+                    return 1;
+                }
+                q.push(next);
+            }
+        }
+    }
+    return 0;
+}
+int main()
+{
+    char str[100];
+    while(gets(str))
+    {
+        memset(vis,0,sizeof(vis));
+        int num1=0;
+        int a[10];
+        int len=strlen(str);
+        for(int i=0;i<len;++i)
+        {
+            if(str[i]>='1'&&str[i]<='8')
+            st.s[num1++]=str[i]-'0';
+            if(str[i]=='x')
+            st.s[num1++]=0;
+        }
+            if(bfs())
+            cout<<path1<<endl;
+            else
+               printf("unsolvable\n");
+
+    }
+}
