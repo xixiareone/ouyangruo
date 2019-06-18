@@ -1,0 +1,35 @@
+(1)
+int primes[N], pn;  // 已经筛出来的[2, n]范围内的素数表
+
+int Factor(int n)   // 该函数返回n分解后的质因数种数，比如4 = 2 × 2，只有一种质因数2，返回1
+{
+    int res = 0;
+    for (int i=0; i<pn; ++i)
+    {
+        if (n % primes[i] == 0)
+        {
+            res++;
+            while (n % primes[i] == 0) n /= primes[i];
+        }
+        if (n == 1) break;
+    }
+    return res;
+}
+(2)
+int primes[N], pn;  // 已经筛出来的[2, sqrt(n)]范围内的素数表
+
+int Factor(int n)   // 该函数返回n分解后的质因数种数，比如4 = 2 × 2，只有一种质因数2，返回1
+{
+    int res = 0;
+    for (int i=0; i<pn; ++i)
+    {
+        if (n % primes[i] == 0)
+        {
+            res++;
+            while (n % primes[i] == 0) n /= primes[i];
+        }
+        if (n == 1) break;
+    }
+    if (n > 1) res++;   // 很明显这是大于sqrt(n)的n的质因数
+    return res;
+}
