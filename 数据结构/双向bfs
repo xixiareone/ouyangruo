@@ -1,0 +1,148 @@
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<cstdlib>
+#include<queue>
+using namespace std;
+const int maxn=1000000;
+int vis[maxn];
+int dx[]={-1,1,0,0};
+int dy[]={0,0,-1,1};
+char d[]="udlr";
+const int f[]={1,1,2,6,24,120,720,5040,40320};
+string path1;
+string path2;
+struct point
+{
+    string path;
+    int zero;
+    int start[10];
+    int End[10];
+    int pan;
+}st;
+int panzhong(int dis[])
+{
+    int code=0;
+    for(int i=0;i<9;++i)
+    {
+        int cnt=0;
+        for(int j=i+1;j<9;++j)
+        {
+            if(dis[i]>dis[j])
+                ++cnt;
+        }
+        code+=f[8-i]*cnt;
+    }
+    return code;
+}
+queue<point>q1;
+queue<point>q2;
+int bfs()
+{
+    while(!q1.empty())
+        q1.pop();
+    while(!q2.empty())
+        q2.pop();
+    path1="";
+    st.path="";
+    for(int i=0;i<9;++i)
+    {
+        if(st.start[i]==0)
+            st.zero=i;
+    }
+    st.pan=panzhong(st.start);
+    vis[st.pan]=1;
+    q1.push(st);
+    for(int i=0;i<8;++i)
+        st.End[i]=i+1;
+    st.End[8]=0;
+    for(int i=0;i<9;++i)
+    {
+        if(st.End[i]==0)
+            st.zero=i;
+    }
+    st.pan=46233;
+    vis[st.pan]=2;
+    q2.push(st);
+    while(!q1.empty()||!q2.empty())
+    {
+        while(!q1.empty())
+        {
+            point now=q1.front();
+           q1.pop ();
+           int x=now.zero/3;
+           int y=now.zero%3;
+          for(int i=0;i<4;++i)
+         {
+             point next=now;
+           int a=x+dx[i];
+           int b=y+dy[i];
+           if(a < 0||b < 0||a >= 3||b >= 3)
+             continue;
+           next.zero=3*a+b;
+           swap(next.start[next.zero],next.start[now.zero]);
+           next.pan=panzhong(next.start);
+           if(vis[next.pan]==1) continue;
+           if(vis[next.pan]==2)
+           {
+               path1=next.path+path2+d[i];
+               return 1;
+           }
+           next.path=next.path+d[i];
+           vis[next.pan]=1;
+           q1.push(next);
+        }
+        }
+        while(!q2.empty())
+        {
+            point now=q2.front();
+            q2.pop();
+            int x=now.zero/3;
+            int y=now.zero%3;
+            for(int i=0;i<4;++i){
+            point next=now;
+           int a=x+dx[i];
+           int b=y+dy[i];
+           if(a < 0||b < 0||a >= 3||b >= 3)
+             continue;
+           next.zero=3*a+b;
+           swap(next.End[next.zero],next.End[now.zero]);
+           next.pan=panzhong(next.End);
+           if(vis[next.pan]==2) continue;
+           if(vis[next.pan]==1)
+           {
+               path2=next.path+path1+d[i];
+               return 1;
+           }
+           next.path=next.path+d[i];
+           vis[next.pan]=1;
+           q2.push(next);
+        }
+    }
+    }
+    return 0;
+}
+int main()
+{
+    char f[100];
+    //freopen("in2.txt","r",stdin);
+    while(gets(f)){
+            int num=0;
+    for(int i=0;i<strlen(f);++i)
+    {
+        if(f[i]=='x')
+            st.start[num++]=0;
+        if(f[i]>='1'&&f[i]<='8')
+            st.start[num++]=f[i]-'0';
+    }
+    if(bfs())
+       cout<<path1+path2<<endl;
+    else
+        printf("unsolvable\n");
+    path1="";
+    path2="";
+    memset(f,0,sizeof(f));
+    memset(vis,0,sizeof(vis));
+    }
+    return 0;
+}
